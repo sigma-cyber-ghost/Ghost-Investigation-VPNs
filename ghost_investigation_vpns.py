@@ -54,7 +54,6 @@ import dns.resolver
 import socket
 import random
 
-# Try to import additional libraries with correct import paths for newer androguard versions
 try:
     from androguard.core.apk import APK
     from androguard.core.dex import DEX
@@ -82,7 +81,6 @@ except ImportError:
 class VPNInvestigationTool:
     def __init__(self):
         self.temp_dir = tempfile.mkdtemp()
-        # Your provided API keys
         self.vt_api_key = "fb10bbc8b86b55705628b380e572209f840d1c6564b4a8ecee79258093fbdf31"
         self.abuseipdb_api_key = "9a86f9b0956ae1c50cbbfca359771f0d61cfe8b26951dfa3e6e5b842415fffa1b46d06da941da06a"
         self.social_media = {
@@ -93,12 +91,10 @@ class VPNInvestigationTool:
             "YouTube2": "https://www.youtube.com/@Sigma-Cyber-Ghost"
         }
         
-        # Known suspicious patterns
         self.suspicious_domains = ['.tk', '.ml', '.ga', '.cf', '.gq', '.xyz', '.top', '.pw', '.cc']
         self.high_risk_countries = ['CN', 'RU', 'IR', 'KP', 'SY']  # High-risk country codes
         
     def __del__(self):
-        # Clean up temporary directory
         if os.path.exists(self.temp_dir):
             shutil.rmtree(self.temp_dir)
     
@@ -145,7 +141,7 @@ class VPNInvestigationTool:
         print("\033[93m           VPN INVESTIGATION TOOL - SIGMA CYBER GHOST EDITION\033[0m")
         print("\033[94m" + "="*80 + "\033[0m")
         print("\033[92m[+] Author: Sigma Cyber Ghost\033[0m")
-        print("\033[92m[+] Specialized in Security Research & Ethical Hacking\033[0m")
+        print("\033[92m[+] Specialized in Security Research & Black Hat Hacking\033[0m")
         print("\033[94m" + "="*80 + "\033[0m")
         
     def print_social_media(self):
@@ -168,7 +164,6 @@ class VPNInvestigationTool:
             
         print(f"\033[92m[+] Analyzing APK: {apk_path}\033[0m")
         
-        # Basic file info
         file_size = os.path.getsize(apk_path)
         with open(apk_path, 'rb') as f:
             file_hash = hashlib.sha256(f.read()).hexdigest()
@@ -176,25 +171,21 @@ class VPNInvestigationTool:
         print(f"\033[96m    File Size: {file_size} bytes\033[0m")
         print(f"\033[96m    SHA-256: {file_hash}\033[0m")
         
-        # Extract APK contents
         try:
             apk = APK(apk_path)
             print(f"\033[96m    Package Name: {apk.get_package()}\033[0m")
             print(f"\033[96m    Version: {apk.get_androidversion_name()}\033[0m")
             
-            # Extract permissions
             permissions = apk.get_permissions()
             print(f"\n\033[92m[+] App Permissions ({len(permissions)}):\033[0m")
             for perm in permissions:
                 print(f"\033[96m    {perm}\033[0m")
             
-            # Extract endpoints from APK
             endpoints = self.extract_endpoints_from_apk(apk_path)
             print(f"\n\033[92m[+] Found {len(endpoints)} potential endpoints:\033[0m")
             for endpoint in endpoints:
                 print(f"\033[96m    {endpoint}\033[0m")
             
-            # Check for suspicious permissions
             suspicious_perms = self.analyze_permissions(permissions)
             if suspicious_perms:
                 print(f"\n\033[91m[!] Suspicious permissions detected:\033[0m")
@@ -211,14 +202,13 @@ class VPNInvestigationTool:
         """Extract endpoints from APK files"""
         endpoints = set()
         
-        # Method 1: Extract with androguard if available
         if ANDROGUARD_AVAILABLE:
             try:
                 apk = APK(apk_path)
                 dex_files = apk.get_all_dex()
                 
                 for dex in dex_files:
-                    # Search for URLs in the dex file
+
                     url_pattern = r'https?://[^\s<>"{}|\\^`[\]]+'
                     matches = re.findall(url_pattern, dex)
                     for match in matches:
@@ -226,7 +216,7 @@ class VPNInvestigationTool:
             except Exception as e:
                 print(f"\033[91m    Error analyzing APK with androguard: {e}\033[0m")
         
-        # Method 2: Extract by unzipping and searching files
+
         try:
             with zipfile.ZipFile(apk_path, 'r') as zip_ref:
                 zip_ref.extractall(self.temp_dir)
@@ -239,13 +229,11 @@ class VPNInvestigationTool:
                             with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
                                 content = f.read()
                                 
-                                # Search for URLs
                                 url_pattern = r'https?://[^\s<>"{}|\\^`[\]]+'
                                 matches = re.findall(url_pattern, content)
                                 for match in matches:
                                     endpoints.add(match)
                                     
-                                # Search for IPs and domains
                                 ip_pattern = r'\b(?:\d{1,3}\.){3}\d{1,3}\b'
                                 domain_pattern = r'\b(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}\b'
                                 
@@ -261,7 +249,7 @@ class VPNInvestigationTool:
                                         endpoints.add(domain)
                                         
                     except (UnicodeDecodeError, IsADirectoryError, PermissionError):
-                        # Skip binary files
+
                         continue
         except Exception as e:
             print(f"\033[91m    Error extracting APK: {e}\033[0m")
@@ -296,7 +284,6 @@ class VPNInvestigationTool:
         """Investigate a VPN server"""
         print(f"\033[92m[+] Investigating server: {server_address}\033[0m")
         
-        # Check if it's an IP or domain
         if self.is_ip_address(server_address):
             return self.investigate_ip(server_address)
         else:
@@ -311,7 +298,6 @@ class VPNInvestigationTool:
         """Investigate an IP address"""
         print(f"\033[96m    IP Address: {ip_address}\033[0m")
         
-        # Geolocation
         try:
             ipwhois = IPWhois(ip_address)
             results = ipwhois.lookup_rdap()
@@ -323,7 +309,6 @@ class VPNInvestigationTool:
             print(f"\033[96m    ASN: {asn}\033[0m")
             print(f"\033[96m    Description: {description}\033[0m")
             
-            # Check for high-risk country
             if country in self.high_risk_countries:
                 print(f"\033[91m    [!] HIGH RISK: Server is located in a high-risk country: {country}\033[0m")
                 
@@ -331,12 +316,10 @@ class VPNInvestigationTool:
             print(f"\033[91m    Geolocation lookup failed: {e}\033[0m")
             country = 'Unknown'
         
-        # DNS resolution check
         try:
             hostname = socket.gethostbyaddr(ip_address)[0]
             print(f"\033[96m    Reverse DNS: {hostname}\033[0m")
             
-            # Check for suspicious domains in reverse DNS
             for suspicious_domain in self.suspicious_domains:
                 if suspicious_domain in hostname:
                     print(f"\033[91m    [!] SUSPICIOUS: Reverse DNS contains suspicious domain: {suspicious_domain}\033[0m")
@@ -345,7 +328,6 @@ class VPNInvestigationTool:
             print(f"\033[96m    Reverse DNS: No PTR record found\033[0m")
             hostname = None
         
-        # Check for open VPN ports
         vpn_ports = [1194, 443, 992, 5555, 8080, 53]
         open_ports = []
         for port in vpn_ports:
@@ -357,21 +339,18 @@ class VPNInvestigationTool:
         else:
             print(f"\033[96m    No standard VPN ports open\033[0m")
         
-        # VirusTotal check
         vt_malicious = 0
         if self.vt_api_key:
             vt_malicious = self.virustotal_check(ip_address, 'ip')
         else:
             print("\033[91m    VirusTotal check skipped (no API key)\033[0m")
         
-        # AbuseIPDB check
         abuse_score = 0
         if self.abuseipdb_api_key:
             abuse_score = self.abuseipdb_check(ip_address)
         else:
             print("\033[91m    AbuseIPDB check skipped (no API key)\033[0m")
         
-        # Overall risk assessment
         self.assess_risk_level(ip_address, country, vt_malicious, abuse_score, hostname)
         
         return True
@@ -380,18 +359,15 @@ class VPNInvestigationTool:
         """Investigate a domain"""
         print(f"\033[96m    Domain: {domain}\033[0m")
         
-        # Check for suspicious domains
         for suspicious_domain in self.suspicious_domains:
             if suspicious_domain in domain:
                 print(f"\033[91m    [!] SUSPICIOUS: Domain contains suspicious TLD: {suspicious_domain}\033[0m")
         
-        # DNS records
         try:
             a_records = dns.resolver.resolve(domain, 'A')
             print(f"\033[96m    A Records:\033[0m")
             for rdata in a_records:
                 print(f"\033[96m        {rdata.address}\033[0m")
-                # Also investigate the IP
                 self.investigate_ip(rdata.address)
         except Exception as e:
             print(f"\033[91m    DNS A record lookup failed: {e}\033[0m")
@@ -402,10 +378,8 @@ class VPNInvestigationTool:
             for rdata in mx_records:
                 print(f"\033[96m        {rdata.exchange}\033[0m")
         except Exception as e:
-            # This is normal for many domains, so we don't treat it as an error
             pass
         
-        # WHOIS information
         try:
             w = whois.whois(domain)
             print(f"\033[96m    Registrar: {w.registrar}\033[0m")
@@ -414,7 +388,6 @@ class VPNInvestigationTool:
             if w.name_servers:
                 print(f"\033[96m    Name Servers: {w.name_servers}\033[0m")
                 
-            # Check for recently created domain
             if hasattr(w.creation_date, '__iter__'):
                 creation_date = w.creation_date[0] if isinstance(w.creation_date, list) else w.creation_date
             else:
@@ -434,7 +407,6 @@ class VPNInvestigationTool:
         except Exception as e:
             print(f"\033[91m    WHOIS lookup failed: {e}\033[0m")
         
-        # VirusTotal check
         vt_malicious = 0
         if self.vt_api_key:
             vt_malicious = self.virustotal_check(domain, 'domain')
@@ -544,11 +516,11 @@ class VPNInvestigationTool:
         
         suspicious_patterns = []
         for endpoint in endpoints:
-            # Check for HTTP (not HTTPS)
+
             if endpoint.startswith('http://'):
                 suspicious_patterns.append(f"Insecure HTTP endpoint: {endpoint}")
             
-            # Check for suspicious domains
+
             for suspicious_domain in self.suspicious_domains:
                 if suspicious_domain in endpoint:
                     suspicious_patterns.append(f"Suspicious domain in endpoint: {endpoint}")
@@ -578,7 +550,6 @@ def main():
         tool.print_social_media()
         sys.exit(1)
     
-    # Add dramatic effect
     tool.typing_effect("\033[92m[+] Initializing Sigma Cyber Ghost VPN Investigation Tool...\033[0m")
     time.sleep(1)
     tool.typing_effect("\033[92m[+] Loading threat intelligence databases...\033[0m")
@@ -587,7 +558,6 @@ def main():
     time.sleep(1)
     print("\033[94m" + "="*80 + "\033[0m")
     
-    # Analyze APK if provided
     endpoints = []
     if args.apk:
         if not os.path.isfile(args.apk):
@@ -598,11 +568,9 @@ def main():
         if endpoints:
             tool.analyze_network_traffic(endpoints)
     
-    # Investigate server if provided
     if args.server:
         tool.investigate_server(args.server)
     
-    # Final output
     print("\033[94m" + "="*80 + "\033[0m")
     tool.typing_effect("\033[92m[+] Investigation completed successfully!\033[0m")
     tool.typing_effect("\033[92m[+] Stay secure with Sigma Cyber Ghost!\033[0m")
